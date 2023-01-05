@@ -1,156 +1,157 @@
 const express = require('express')
 const app = express()
 const PORT = 8080
-const db = require('./database')
-const bodyParser = require('body-parser')
-const { body, validationResult } = require('express-validator');
+const router = require('./asisten/route')
 
+const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json())
 
 
-app.get('/asisten', (req, res) => {
-    const sql = "select * from asisten"
-    db.query(sql, (err, result) => {
-        res.status(201).json({
-            status: "OK",
-            message: "Successfull get data asisten",
-            data: result
-        })
-    })
-})
+app.use(router);
 
-app.post('/asisten', [
-    //validation 
+// app.get('/asisten', (req, res) => {
+//     const sql = "select * from asisten"
+//     db.query(sql, (err, result) => {
+//         res.status(201).json({
+//             status: "OK",
+//             message: "Successfull get data asisten",
+//             data: result
+//         })
+//     })
+// })
 
-    body('email').notEmpty(),
-    body('nama').notEmpty(),
-    body('alamat').notEmpty(),
-    body('jabatan').notEmpty()
-],
-    (req, res) => {
+// app.post('/asisten', [
+//     //validation 
 
-        const error = validationResult(req);
+//     body('email').notEmpty(),
+//     body('nama').notEmpty(),
+//     body('alamat').notEmpty(),
+//     body('jabatan').notEmpty()
+// ],
+//     (req, res) => {
 
-        if (!error.isEmpty()) {
-            return res.status(422).json({
-                errors: error.array()
-            });
-        }
+//         const error = validationResult(req);
 
-        const data = {
-            email: req.body.email,
-            nama: req.body.nama,
-            alamat: req.body.alamat,
-            jabatan: req.body.jabatan,
-        }
-        db.query('INSERT INTO asisten SET ?', data, function (err, rows) {
-            if (err) {
-                return res.status(500).json({
-                    status: false,
-                    message: 'internal servel error'
-                })
-            } else {
-                return res.status(201).json({
-                    status: true,
-                    message: 'Successfully insert data asisten',
-                    data: rows[0]
-                })
-            }
-        })
-    })
+//         if (!error.isEmpty()) {
+//             return res.status(422).json({
+//                 errors: error.array()
+//             });
+//         }
 
-app.get('/asisten/:id', function (req, res) {
+//         const data = {
+//             email: req.body.email,
+//             nama: req.body.nama,
+//             alamat: req.body.alamat,
+//             jabatan: req.body.jabatan,
+//         }
+//         db.query('INSERT INTO asisten SET ?', data, function (err, rows) {
+//             if (err) {
+//                 return res.status(500).json({
+//                     status: false,
+//                     message: 'internal servel error'
+//                 })
+//             } else {
+//                 return res.status(201).json({
+//                     status: true,
+//                     message: 'Successfully insert data asisten',
+//                     data: rows[0]
+//                 })
+//             }
+//         })
+//     })
 
-    const nama = req.params.id;
+// app.get('/asisten/:id', function (req, res) {
 
-    db.query(`SELECT * FROM ASISTEN WHERE nama = '${nama}' `, function (err, row) {
+//     const nama = req.params.id;
 
-        if (err) {
-            return res.status(500).json({
-                status: false,
-                message: err
-            })
-        } if (row.length <= 0) {
-            return res.status(404).json({
-                status: false,
-                message: 'data not found'
-            })
-        } else {
-            return res.status(200).json({
-                status: true,
-                message: 'successfull found data asisten',
-                data: row[0]
-            })
-        }
+//     db.query(`SELECT * FROM ASISTEN WHERE nama = '${nama}' `, function (err, row) {
 
-    })
-})
+//         if (err) {
+//             return res.status(500).json({
+//                 status: false,
+//                 message: err
+//             })
+//         } if (row.length <= 0) {
+//             return res.status(404).json({
+//                 status: false,
+//                 message: 'data not found'
+//             })
+//         } else {
+//             return res.status(200).json({
+//                 status: true,
+//                 message: 'successfull found data asisten',
+//                 data: row[0]
+//             })
+//         }
 
-app.patch('/asisten/:id', [
+//     })
+// })
 
-    //validation
-    body('email').notEmpty(),
-    body('nama').notEmpty(),
-    body('alamat').notEmpty(),
-    body('jabatan').notEmpty()
+// app.patch('/asisten/:id', [
 
-], (req, res) => {
-    const error = validationResult(req);
+//     //validation
+//     body('email').notEmpty(),
+//     body('nama').notEmpty(),
+//     body('alamat').notEmpty(),
+//     body('jabatan').notEmpty()
 
-    if (!error.isEmpty()) {
-        return res.status(422).json({
-            status: false,
-            message: error.array()
-        })
-    }
+// ], (req, res) => {
+//     const error = validationResult(req);
 
-    const nama = req.params.id;
+//     if (!error.isEmpty()) {
+//         return res.status(422).json({
+//             status: false,
+//             message: error.array()
+//         })
+//     }
 
-    const data = {
-        email: req.body.email,
-        nama: req.body.nama,
-        alamat: req.body.alamat,
-        jabatan: req.body.jabatan,
-    }
+//     const nama = req.params.id;
 
-    db.query(`UPDATE asisten set ? where nama = '${nama}' `, data, function (err, rows) {
-        if (err) {
-            return res.status(500).json({
-                status: false,
-                message: err
-            })
-        } else {
-            return res.status(200).json({
-                status: true,
-                message: 'successfull updata data asisten',
-                data: rows[0]
-            })
-        }
-    })
+//     const data = {
+//         email: req.body.email,
+//         nama: req.body.nama,
+//         alamat: req.body.alamat,
+//         jabatan: req.body.jabatan,
+//     }
 
-})
+//     db.query(`UPDATE asisten set ? where nama = '${nama}' `, data, function (err, rows) {
+//         if (err) {
+//             return res.status(500).json({
+//                 status: false,
+//                 message: err
+//             })
+//         } else {
+//             return res.status(200).json({
+//                 status: true,
+//                 message: 'successfull updata data asisten',
+//                 data: rows[0]
+//             })
+//         }
+//     })
 
-app.delete('/asisten/:id', function(req, res) {
-    const nama = req.params.id
+// })
 
-    db.query(`delete from asisten where nama = '${nama}'`, function(err, row) {
-        if(err) {
-            return res.status(500).json({
-                status: false,
-                message: err,
-            })
-        }else {
-            return res.status(200).json({
-                status: true,
-                message: 'Successfull delete data asisten'
-            })
-        }
-    })
-})
+// app.delete('/asisten/:id', function(req, res) {
+//     const nama = req.params.id
+
+//     db.query(`delete from asisten where nama = '${nama}'`, function(err, row) {
+//         if(err) {
+//             return res.status(500).json({
+//                 status: false,
+//                 message: err,
+//             })
+//         }else {
+//             return res.status(200).json({
+//                 status: true,
+//                 message: 'Successfull delete data asisten'
+//             })
+//         }
+//     })
+// })
 
 
-
+//check if program is ok or not
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "OK"
